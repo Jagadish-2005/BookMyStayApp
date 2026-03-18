@@ -1,60 +1,56 @@
-import java.util.*;
+import java.util.Scanner;
 
-abstract class Room {
-    protected int numberOfBeds;
-    protected int squareFeet;
-    protected double pricePerNight;
-
-    public Room(int numberOfBeds, int squareFeet, double pricePerNight) {
-        this.numberOfBeds = numberOfBeds;
-        this.squareFeet = squareFeet;
-        this.pricePerNight = pricePerNight;
+class InvalidBookingException extends Exception {
+    public InvalidBookingException(String message) {
+        super(message);
     }
-
-    public double getPricePerNight() { return pricePerNight; }
 }
 
-class SingleRoom extends Room {
-    public SingleRoom() { super(1, 250, 1500.0); }
+class RoomInventory {
+    // Placeholder for the inventory logic used by the validator
 }
 
-class Service {
-    private String serviceName;
-    private double cost;
-
-    public Service(String serviceName, double cost) {
-        this.serviceName = serviceName;
-        this.cost = cost;
-    }
-
-    public String getServiceName() { return serviceName; }
-    public double getCost() { return cost; }
+class BookingRequestQueue {
+    // Placeholder for the queue logic used in the main method
 }
 
-class BookingConfirmationService {
-    public void confirmBooking(String guestName, String reservationId, Room room, double addonCost) {
-        double roomPrice = room.getPricePerNight();
-        double totalBill = roomPrice + addonCost;
+class ReservationValidator {
+    public void validate(String guestName, String roomType, RoomInventory inventory) throws InvalidBookingException {
+        if (guestName == null || guestName.trim().isEmpty()) {
+            throw new InvalidBookingException("Guest name cannot be empty.");
+        }
 
-        System.out.println("Final Booking Confirmation");
-        System.out.println("Guest Name: " + guestName);
-        System.out.println("Reservation ID: " + reservationId);
-        System.out.println("Room Charges: " + roomPrice);
-        System.out.println("Add-on Charges: " + addonCost);
-        System.out.println("Total Bill: " + totalBill);
-        System.out.println("\nBooking Successful!");
+        // Validation is case-sensitive as per the requirements
+        if (!(roomType.equals("Single") || roomType.equals("Double") || roomType.equals("Suite"))) {
+            throw new InvalidBookingException("Invalid room type selected.");
+        }
     }
 }
 
 public class BookMyStayApp {
     public static void main(String[] args) {
-        BookingConfirmationService confirmationService = new BookingConfirmationService();
+        System.out.println("Booking Validation");
+        Scanner scanner = new Scanner(System.in);
 
-        String guestName = "Abhi";
-        String resId = "Single-1";
-        Room selectedRoom = new SingleRoom();
-        double totalAddons = 1500.0;
+        RoomInventory inventory = new RoomInventory();
+        ReservationValidator validator = new ReservationValidator();
+        BookingRequestQueue bookingQueue = new BookingRequestQueue();
 
-        confirmationService.confirmBooking(guestName, resId, selectedRoom, totalAddons);
+        try {
+            System.out.print("Enter guest name: ");
+            String guestName = scanner.nextLine();
+
+            System.out.print("Enter room type (Single/Double/Suite): ");
+            String roomType = scanner.nextLine();
+
+            validator.validate(guestName, roomType, inventory);
+
+            System.out.println("Booking successful for " + guestName);
+
+        } catch (InvalidBookingException e) {
+            System.out.println("Booking failed: " + e.getMessage());
+        } finally {
+            scanner.close();
+        }
     }
 }
