@@ -1,51 +1,56 @@
-import java.util.*;
+import java.util.Scanner;
 
-class Feedback {
-    private String comments;
-    private int rating;
-
-    public Feedback(String comments, int rating) {
-        this.comments = comments;
-        this.rating = rating;
+class InvalidBookingException extends Exception {
+    public InvalidBookingException(String message) {
+        super(message);
     }
-
-    public String getComments() { return comments; }
-    public int getRating() { return rating; }
 }
 
-class FeedbackService {
-    private Map<String, Feedback> guestFeedback;
+class RoomInventory {
+    // Placeholder for the inventory logic used by the validator
+}
 
-    public FeedbackService() {
-        guestFeedback = new HashMap<>();
-    }
+class BookingRequestQueue {
+    // Placeholder for the queue logic used in the main method
+}
 
-    public void submitFeedback(String reservationId, Feedback feedback) {
-        guestFeedback.put(reservationId, feedback);
-    }
+class ReservationValidator {
+    public void validate(String guestName, String roomType, RoomInventory inventory) throws InvalidBookingException {
+        if (guestName == null || guestName.trim().isEmpty()) {
+            throw new InvalidBookingException("Guest name cannot be empty.");
+        }
 
-    public void displayFeedback(String reservationId) {
-        Feedback f = guestFeedback.get(reservationId);
-        if (f != null) {
-            System.out.println("Guest Feedback for " + reservationId + ":");
-            System.out.println("Rating: " + f.getRating() + "/5");
-            System.out.println("Comments: " + f.getComments());
-        } else {
-            System.out.println("No feedback found for " + reservationId);
+        // Validation is case-sensitive as per the requirements
+        if (!(roomType.equals("Single") || roomType.equals("Double") || roomType.equals("Suite"))) {
+            throw new InvalidBookingException("Invalid room type selected.");
         }
     }
 }
 
 public class BookMyStayApp {
     public static void main(String[] args) {
-        System.out.println("Room Feedback and Rating\n");
+        System.out.println("Booking Validation");
+        Scanner scanner = new Scanner(System.in);
 
-        FeedbackService feedbackService = new FeedbackService();
-        String resId = "Single-1";
+        RoomInventory inventory = new RoomInventory();
+        ReservationValidator validator = new ReservationValidator();
+        BookingRequestQueue bookingQueue = new BookingRequestQueue();
 
-        Feedback guestFeedback = new Feedback("Excellent service and clean room!", 5);
-        feedbackService.submitFeedback(resId, guestFeedback);
+        try {
+            System.out.print("Enter guest name: ");
+            String guestName = scanner.nextLine();
 
-        feedbackService.displayFeedback(resId);
+            System.out.print("Enter room type (Single/Double/Suite): ");
+            String roomType = scanner.nextLine();
+
+            validator.validate(guestName, roomType, inventory);
+
+            System.out.println("Booking successful for " + guestName);
+
+        } catch (InvalidBookingException e) {
+            System.out.println("Booking failed: " + e.getMessage());
+        } finally {
+            scanner.close();
+        }
     }
 }
