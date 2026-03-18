@@ -1,60 +1,51 @@
 import java.util.*;
 
-abstract class Room {
-    protected int numberOfBeds;
-    protected int squareFeet;
-    protected double pricePerNight;
+class Feedback {
+    private String comments;
+    private int rating;
 
-    public Room(int numberOfBeds, int squareFeet, double pricePerNight) {
-        this.numberOfBeds = numberOfBeds;
-        this.squareFeet = squareFeet;
-        this.pricePerNight = pricePerNight;
+    public Feedback(String comments, int rating) {
+        this.comments = comments;
+        this.rating = rating;
     }
 
-    public double getPricePerNight() { return pricePerNight; }
+    public String getComments() { return comments; }
+    public int getRating() { return rating; }
 }
 
-class SingleRoom extends Room {
-    public SingleRoom() { super(1, 250, 1500.0); }
-}
+class FeedbackService {
+    private Map<String, Feedback> guestFeedback;
 
-class Service {
-    private String serviceName;
-    private double cost;
-
-    public Service(String serviceName, double cost) {
-        this.serviceName = serviceName;
-        this.cost = cost;
+    public FeedbackService() {
+        guestFeedback = new HashMap<>();
     }
 
-    public String getServiceName() { return serviceName; }
-    public double getCost() { return cost; }
-}
+    public void submitFeedback(String reservationId, Feedback feedback) {
+        guestFeedback.put(reservationId, feedback);
+    }
 
-class BookingConfirmationService {
-    public void confirmBooking(String guestName, String reservationId, Room room, double addonCost) {
-        double roomPrice = room.getPricePerNight();
-        double totalBill = roomPrice + addonCost;
-
-        System.out.println("Final Booking Confirmation");
-        System.out.println("Guest Name: " + guestName);
-        System.out.println("Reservation ID: " + reservationId);
-        System.out.println("Room Charges: " + roomPrice);
-        System.out.println("Add-on Charges: " + addonCost);
-        System.out.println("Total Bill: " + totalBill);
-        System.out.println("\nBooking Successful!");
+    public void displayFeedback(String reservationId) {
+        Feedback f = guestFeedback.get(reservationId);
+        if (f != null) {
+            System.out.println("Guest Feedback for " + reservationId + ":");
+            System.out.println("Rating: " + f.getRating() + "/5");
+            System.out.println("Comments: " + f.getComments());
+        } else {
+            System.out.println("No feedback found for " + reservationId);
+        }
     }
 }
 
 public class BookMyStayApp {
     public static void main(String[] args) {
-        BookingConfirmationService confirmationService = new BookingConfirmationService();
+        System.out.println("Room Feedback and Rating\n");
 
-        String guestName = "Abhi";
+        FeedbackService feedbackService = new FeedbackService();
         String resId = "Single-1";
-        Room selectedRoom = new SingleRoom();
-        double totalAddons = 1500.0;
 
-        confirmationService.confirmBooking(guestName, resId, selectedRoom, totalAddons);
+        Feedback guestFeedback = new Feedback("Excellent service and clean room!", 5);
+        feedbackService.submitFeedback(resId, guestFeedback);
+
+        feedbackService.displayFeedback(resId);
     }
 }
