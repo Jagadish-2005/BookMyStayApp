@@ -11,11 +11,7 @@ abstract class Room {
         this.pricePerNight = pricePerNight;
     }
 
-    public void displayRoomDetails() {
-        System.out.println("Beds: " + numberOfBeds);
-        System.out.println("Size: " + squareFeet + " sqft");
-        System.out.println("Price per night: " + pricePerNight);
-    }
+    public double getPricePerNight() { return pricePerNight; }
 }
 
 class SingleRoom extends Room {
@@ -35,45 +31,30 @@ class Service {
     public double getCost() { return cost; }
 }
 
-class AddOnServiceManager {
-    private Map<String, List<Service>> servicesByReservation;
+class BookingConfirmationService {
+    public void confirmBooking(String guestName, String reservationId, Room room, double addonCost) {
+        double roomPrice = room.getPricePerNight();
+        double totalBill = roomPrice + addonCost;
 
-    public AddOnServiceManager() {
-        servicesByReservation = new HashMap<>();
-    }
-
-    public void addService(String reservationId, Service service) {
-        servicesByReservation.computeIfAbsent(reservationId, k -> new ArrayList<>()).add(service);
-    }
-
-    public double calculateTotalServiceCost(String reservationId) {
-        List<Service> services = servicesByReservation.get(reservationId);
-        if (services == null) return 0.0;
-
-        double total = 0;
-        for (Service s : services) {
-            total += s.getCost();
-        }
-        return total;
+        System.out.println("Final Booking Confirmation");
+        System.out.println("Guest Name: " + guestName);
+        System.out.println("Reservation ID: " + reservationId);
+        System.out.println("Room Charges: " + roomPrice);
+        System.out.println("Add-on Charges: " + addonCost);
+        System.out.println("Total Bill: " + totalBill);
+        System.out.println("\nBooking Successful!");
     }
 }
 
 public class BookMyStayApp {
     public static void main(String[] args) {
-        System.out.println("Add-On Service Selection");
+        BookingConfirmationService confirmationService = new BookingConfirmationService();
 
-        AddOnServiceManager serviceManager = new AddOnServiceManager();
-        String reservationId = "Single-1";
+        String guestName = "Abhi";
+        String resId = "Single-1";
+        Room selectedRoom = new SingleRoom();
+        double totalAddons = 1500.0;
 
-        Service breakfast = new Service("Breakfast", 500.0);
-        Service spa = new Service("Spa", 1000.0);
-
-        serviceManager.addService(reservationId, breakfast);
-        serviceManager.addService(reservationId, spa);
-
-        double totalCost = serviceManager.calculateTotalServiceCost(reservationId);
-
-        System.out.println("Reservation ID: " + reservationId);
-        System.out.println("Total Add-On Cost: " + totalCost);
+        confirmationService.confirmBooking(guestName, resId, selectedRoom, totalAddons);
     }
 }
